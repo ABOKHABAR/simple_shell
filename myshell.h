@@ -11,7 +11,6 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <errno.h>
-
 #define H7K2L_READ_BUF_SIZE 1024
 #define H7K2L_WRITE_BUF_SIZE 1024
 #define H7K2L_BUF_FLUSH -1
