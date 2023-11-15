@@ -1,5 +1,14 @@
 #include "myshell.h"
 
+
+/**
+ * _custom_str_to-int - converts a string to an integer
+ * @custom_str: the string to be converted
+ * Return: 0 if no numbers in string, converted number otherwise
+ *       -1 on error
+ *
+ */
+
 int _custom_str_to_int(char *custom_str)
 {
 	int custom_i = 0;
@@ -29,6 +38,15 @@ int _custom_str_to_int(char *custom_str)
 	return (custom_result);
 }
 
+
+/**
+ * custom_print_error - prints an error message
+ * @custom_info: the parameter & return info struct
+ * @custom_error_type: string containing specified error type
+ * Return: 0 if no numbers in string, converted number otherwise
+ *        -1 on error
+ */
+
 void custom_print_error(custom_info_t *custom_info, char *custom_error_type)
 {
 	_custom_err_puts(custom_info->custom_fname);
@@ -40,15 +58,23 @@ void custom_print_error(custom_info_t *custom_info, char *custom_error_type)
 	_custom_err_puts(custom_error_type);
 }
 
+/**
+ * custom_print_int - function prints a decimal (integer) number (base 10)
+ * @custom_input: the input
+ * @custom_fd: the filedescriptor to write to
+ *
+ * Return: number of characters printed
+ */
+
 int custom_print_int(int custom_input, int custom_fd)
 {
-	int (*custom_putchar_func)(char) = _custom_putchar;
+	int (*custom_putchar_func)(char) = custom_putchar_func;
 	int custom_i, custom_count = 0;
 	unsigned int custom_abs, custom_current;
 
 	if (custom_fd == STDERR_FILENO)
 	{
-		custom_putchar_func = _custom_err_putchar;
+		custom_putchar_func = custom_putchar_func;
 	}
 
 	if (custom_input < 0)
@@ -79,7 +105,16 @@ int custom_print_int(int custom_input, int custom_fd)
 	return (custom_count);
 }
 
-char *custom_convert_number(long int custom_num, int custom_base, int custom_flags)
+/**
+ * custom_convert_number - converter function, a clone of itoa
+ * @custom_num: number
+ * @custom_base: base
+ * @custom_flags: argument flags
+ *
+ * Return: string
+ */
+
+char *custom_convert_number(int custom_num, int custom_base, int custom_flags)
 {
 	static char *custom_array;
 	static char custom_buffer[CUSTOM_BUFFER_SIZE];
@@ -93,8 +128,11 @@ char *custom_convert_number(long int custom_num, int custom_base, int custom_fla
 		custom_sign = '-';
 	}
 
-	custom_array = (custom_flags & CUSTOM_FLAG_LOWERCASE) ? "0123456789abcdef" : "0123456789ABCDEF";
-	custom_ptr = &custom_buffer[CUSTOM_BUFFER_SIZE - 1];
+	custom_array =
+	(custom_flags & CUSTOM_FLAG_LOWERCASE)
+	? "0123456789abcdef" : "0123456789ABCDEF";
+	custom_ptr = &custom_buffer
+		[CUSTOM_BUFFER_SIZE - 1];
 	*custom_ptr = '\0';
 
 	do
@@ -114,13 +152,21 @@ char *custom_convert_number(long int custom_num, int custom_base, int custom_fla
 	return (custom_ptr);
 }
 
+/**
+ * custom_remove_comments - function replaces first instance of '#' with '\0'
+ * @custom_buf: address of the string to modify
+ *
+ * Return: Always 0;
+ */
+
 void custom_remove_comments(char *custom_buf)
 {
 	int custom_i;
 
 	for (custom_i = 0; custom_buf[custom_i] != '\0'; custom_i++)
 	{
-		if (custom_buf[custom_i] == '#' && (!custom_i || custom_buf[custom_i - 1] == ' '))
+		if (custom_buf[custom_i] == '#' &&
+				(!custom_i || custom_buf[custom_i - 1] == ' '))
 		{
 			custom_buf[custom_i] = '\0';
 

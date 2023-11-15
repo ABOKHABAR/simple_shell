@@ -1,5 +1,10 @@
 #include "myshell.h"
 
+/**
+ * _custom_clear_custom_info - initializes info_t struct
+ * @custom_info: struct address
+ */
+
 void _custom_clear_custom_info(info_t *custom_info)
 {
 	custom_info->custom_arg = NULL;
@@ -7,6 +12,12 @@ void _custom_clear_custom_info(info_t *custom_info)
 	custom_info->custom_path = NULL;
 	custom_info->custom_argc = 0;
 }
+
+/**
+ * _custom_set_custom_info - initializes info_t struct
+ * @custom_info: struct address
+ * @custom_av: argument vector
+ */
 
 void _custom_set_custom_info(info_t *custom_info, char **custom_av)
 {
@@ -25,7 +36,8 @@ void _custom_set_custom_info(info_t *custom_info, char **custom_av)
 				custom_info->custom_argv[1] = NULL;
 			}
 		}
-		for (custom_i = 0; custom_info->custom_argv && custom_info->custom_argv[custom_i]; custom_i++)
+		for (custom_i = 0; custom_info->custom_argv
+				&& custom_info->custom_argv[custom_i]; custom_i++)
 			;
 		custom_info->custom_argc = custom_i;
 
@@ -33,6 +45,12 @@ void _custom_set_custom_info(info_t *custom_info, char **custom_av)
 		_custom_replace_custom_vars(custom_info);
 	}
 }
+
+/**
+ * _custom_free_custom_info - frees info_t struct fields
+ * @custom_info: struct address
+ * @all: true if freeing all fields
+ */
 
 void _custom_free_custom_info(info_t *custom_info, int all)
 {

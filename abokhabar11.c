@@ -1,5 +1,12 @@
 #include "myshell.h"
 
+/**
+ * _custom_get_custom_history_file - gets the history file
+ * @custom_info: parameter struct
+ *
+ * Return: allocated string containg history file
+ */
+
 char *_custom_get_custom_history_file(info_t *custom_info)
 {
 	char *custom_buf, *custom_dir;
@@ -9,7 +16,8 @@ char *_custom_get_custom_history_file(info_t *custom_info)
 	{
 		return (NULL);
 	}
-	custom_buf = _custom_malloc(sizeof(char) * (_custom_strlen(custom_dir) + _custom_strlen(CUSTOM_HIST_FILE) + 2));
+	custom_buf = _custom_malloc(sizeof(char) *
+			(_custom_strlen(custom_dir) + _custom_strlen(CUSTOM_HIST_FILE) + 2));
 	if (!custom_buf)
 	{
 		return (NULL);
@@ -20,6 +28,13 @@ char *_custom_get_custom_history_file(info_t *custom_info)
 	_custom_strcat(custom_buf, CUSTOM_HIST_FILE);
 	return (custom_buf);
 }
+
+/**
+ * _custom_write_custom_history - creates, or appends to an existing file
+ * @custom_info: the parameter struct
+ *
+ * Return: 1 on success, else -1
+ */
 
 int _custom_write_custom_history(info_t *custom_info)
 {
@@ -38,7 +53,8 @@ int _custom_write_custom_history(info_t *custom_info)
 	{
 		return (-1);
 	}
-	for (custom_node = custom_info->custom_history; custom_node; custom_node = custom_node->next)
+	for (custom_node = custom_info->custom_history; custom_node;
+			custom_node = custom_node->next)
 	{
 		_custom_putsfd(custom_node->str, custom_fd);
 		_custom_putfd('\n', custom_fd);
@@ -48,12 +64,21 @@ int _custom_write_custom_history(info_t *custom_info)
 	return (1);
 }
 
+
+/**
+ * _custom_read_custom_history - reads history from file
+ * @custom_info: the parameter struct
+ *
+ * Return: histcount on success, 0 otherwise
+ */
+
 int _custom_read_custom_history(info_t *custom_info)
 {
 	int custom_i, custom_last = 0, custom_linecount = 0;
 	ssize_t custom_fd, custom_rdlen, custom_fsize = 0;
 	struct stat custom_st;
-	char *custom_buf = NULL, *custom_filename = _custom_get_custom_history_file(custom_info);
+	char *custom_buf = NULL, *custom_filename =
+		_custom_get_custom_history_file(custom_info);
 
 	if (!custom_filename)
 	{
@@ -92,13 +117,15 @@ int _custom_read_custom_history(info_t *custom_info)
 			if (custom_buf[custom_i] == '\n')
 			{
 				custom_buf[custom_i] = 0;
-				_custom_build_custom_history_list(custom_info, custom_buf + custom_last, custom_linecount++);
+				_custom_build_custom_history_list
+					(custom_info, custom_buf + custom_last, custom_linecount++);
 				custom_last = custom_i + 1;
 			}
 		}
 		if (custom_last != custom_i)
 		{
-			_custom_build_custom_history_list(custom_info, custom_buf + custom_last, custom_linecount++);
+			_custom_build_custom_history_list
+				(custom_info, custom_buf + custom_last, custom_linecount++);
 		}
 		_custom_free(custom_buf);
 		custom_info->custom_histcount = custom_linecount;
@@ -110,7 +137,16 @@ int _custom_read_custom_history(info_t *custom_info)
 		return (custom_info->custom_histcount);
 }
 
-int _custom_build_custom_history_list(info_t *custom_info, char *custom_buf, int custom_linecount)
+/**
+ * custom_history - adds entry to a history linked list
+ * @custom_info: Structure containing potential arguments. Used to maintain
+ * @custom_buf: buffer
+ * @custom_linecount: the history linecount, histcount
+ *
+ * Return: Always 0
+ */
+
+int custom_history(info_t *custom_info, char *custom_buf, int custom_linecount)
 {
 	list_t *custom_node = NULL;
 
@@ -125,6 +161,15 @@ int _custom_build_custom_history_list(info_t *custom_info, char *custom_buf, int
 	}
 	return (0);
 }
+
+
+/**
+ * _custom_renumber_custom_history - renumbers the history
+ * linked list after changes
+ * @custom_info: Structure containing potential arguments. Used to maintain
+ *
+ * Return: the new histcount
+ */
 
 int _custom_renumber_custom_history(info_t *custom_info)
 {
