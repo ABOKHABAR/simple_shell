@@ -22,6 +22,9 @@
 #define CUSTOM_FLAG_UNSIGNED 0x01
 #define CUSTOM_FLAG_LOWERCASE 0x02
 #define BUF_FLUSH
+#ifndef LIST_H
+#define LIST_H
+
 
 #define H7K2L_CMD_NORM 0
 #define H7K2L_CMD_OR 1

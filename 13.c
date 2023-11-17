@@ -1,4 +1,13 @@
-#include "shell.h"
+#include "myshell.h"
+
+/**
+ * my_custom_add_node - adds a node to the start of the list
+ * @head: address of pointer to head node
+ * @data: str field of node
+ * @index: node index used by history
+ *
+ * Return: size of list
+ */
 
 list_t *my_custom_add_node(list_t **head, const char *data, int index)
 {
@@ -28,6 +37,15 @@ list_t *my_custom_add_node(list_t **head, const char *data, int index)
 
 	return (new_node);
 }
+
+/**
+ * my_custom_add_node_end - adds a node to the end of the list
+ * @head: address of pointer to head node
+ * @data: str field of node
+ * @index: node index used by history
+ *
+ * Return: size of list
+ */
 
 list_t *my_custom_add_node_end(list_t **head, const char *data, int index)
 {
@@ -68,20 +86,37 @@ list_t *my_custom_add_node_end(list_t **head, const char *data, int index)
 	return (new_node);
 }
 
+
+/**
+ * my_custom_print_list_data - prints the str element of a list_t linked list
+ * @head: pointer to first node
+ *
+ * Return: size of list
+ */
+
 size_t my_custom_print_list_data(const list_t *head)
 {
 	size_t count = 0;
 
 	while (head)
 	{
-		_puts(head->data ? head->data : "(nil)");
-		_puts("\n");
+		puts(head->data ? head->data : "(nil)");
+		puts("\n");
 		head = head->next;
 		count++;
 	}
 
 	return (count);
 }
+
+
+/**
+ * my_custom_delete_node_at_index - deletes node at given index
+ * @head: address of pointer to first node
+ * @index: index of node to delete
+ *
+ * Return: 1 on success, 0 on failure
+ */
 
 int my_custom_delete_node_at_index(list_t **head, unsigned int index)
 {
@@ -122,6 +157,14 @@ int my_custom_delete_node_at_index(list_t **head, unsigned int index)
 
 	return (0);
 }
+
+
+/**
+ * my_custom_free_list - frees all nodes of a list
+ * @head_ptr: address of pointer to head node
+ *
+ * Return: void
+ */
 
 void my_custom_free_list(list_t **head_ptr)
 {
