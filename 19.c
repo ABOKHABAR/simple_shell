@@ -1,5 +1,13 @@
 #include "shell.h"
 
+/**
+ * fnx1 - main shell loop
+ * @i: the parameter & return info struct
+ * @av: the argument vector from main()
+ *
+ * Return: 0 on success, 1 on error, or error code
+ */
+
 int fnx1(info_t *i, char **av)
 {
 	ssize_t r = 0;
@@ -16,6 +24,7 @@ int fnx1(info_t *i, char **av)
 		{
 			set_info(i, av);
 			br = find_builtin(i);
+
 			if (br == -1)
 				find_command(i);
 		}
@@ -33,8 +42,18 @@ int fnx1(info_t *i, char **av)
 			exit(i->status);
 		exit(i->err_num);
 	}
-	return br;
+	return (br);
 }
+
+/**
+ * fnx2 - finds a builtin command
+ * @i: the parameter & return info struct
+ *
+ * Return: -1 if builtin not found,
+ *			0 if builtin executed successfully,
+ *			1 if builtin found but not successful,
+ *			-2 if builtin signals exit()
+ */
 
 int fnx2(info_t *i)
 {
@@ -58,8 +77,15 @@ int fnx2(info_t *i)
 			br = tbl[j].func(i);
 			break;
 	}
-	return br;
+	return (br);
 }
+
+/**
+ * fnx3 - finds a command in PATH
+ * @i: the parameter & return info struct
+ *
+ * Return: void
+ */
 
 void fnx3(info_t *i)
 {
@@ -96,6 +122,13 @@ void fnx3(info_t *i)
 		}
 	}
 }
+
+/**
+ * fnx4 - forks a an exec thread to run cmd
+ * @i: the parameter & return info struct
+ *
+ * Return: void
+ */
 
 void fnx4(info_t *i)
 {

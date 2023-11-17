@@ -24,7 +24,7 @@
 #define BUF_FLUSH
 #ifndef LIST_H
 #define LIST_H
-
+#define _H7k2L_S1sH_
 
 #define H7K2L_CMD_NORM 0
 #define H7K2L_CMD_OR 1
