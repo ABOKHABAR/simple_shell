@@ -112,8 +112,6 @@ int _custom_read_custom_history(info_t *custom_info)
 		_custom_free(custom_buf);
 		return (0);
 	}
-	return (_custom_process_custom_history
-			(custom_info, custom_buf, custom_fsize));
 }
 int _custom_process_custom_history
 (info_t *custom_info, char *custom_buf, ssize_t custom_fsize);
