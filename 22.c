@@ -7,30 +7,23 @@ char **fnx1(char *str, char *d)
 
 	if (str == NULL || str[0] == 0)
 		return (NULL);
-
 	if (!d)
 		d = " ";
-
 	for (i = 0; str[i] != '\0'; i++)
 		if (!fnx2(str[i], d) && (fnx2(str[i + 1], d) || !str[i + 1]))
 			numwords++;
-
 	if (numwords == 0)
 		return (NULL);
-
 	s = malloc((1 + numwords) * sizeof(char *));
 	if (!s)
 		return (NULL);
-
 	for (i = 0, j = 0; j < numwords; j++)
 	{
 		while (fnx2(str[i], d))
 			i++;
-
 		k = 0;
 		while (!fnx2(str[i + k], d) && str[i + k])
 			k++;
-
 		s[j] = malloc((k + 1) * sizeof(char));
 		if (!s[j])
 		{
@@ -39,17 +32,14 @@ char **fnx1(char *str, char *d)
 			free(s);
 			return (NULL);
 		}
-
 		for (m = 0; m < k; m++)
 			s[j][m] = str[i++];
-
 		s[j][m] = 0;
 	}
 
 	s[j] = NULL;
 	return (s);
 }
-
 char **fnx3(char *str, char d)
 {
 	int i, j, k, m, numwords = 0;
@@ -57,15 +47,12 @@ char **fnx3(char *str, char d)
 
 	if (str == NULL || str[0] == 0)
 		return (NULL);
-
 	for (i = 0; str[i] != '\0'; i++)
 		if ((str[i] != d && str[i + 1] == d) ||
 			(str[i] != d && !str[i + 1]) || str[i + 1] == d)
 			numwords++;
-
 	if (numwords == 0)
 		return (NULL);
-
 	s = malloc((1 + numwords) * sizeof(char *));
 	if (!s)
 		return (NULL);
@@ -78,7 +65,6 @@ char **fnx3(char *str, char d)
 		k = 0;
 		while (str[i + k] != d && str[i + k] && str[i + k] != d)
 			k++;
-
 		s[j] = malloc((k + 1) * sizeof(char));
 		if (!s[j])
 		{
@@ -87,13 +73,10 @@ char **fnx3(char *str, char d)
 			free(s);
 			return (NULL);
 		}
-
 		for (m = 0; m < k; m++)
 			s[j][m] = str[i++];
-
 		s[j][m] = 0;
 	}
-
 	s[j] = NULL;
 	return (s);
 }
