@@ -71,72 +71,83 @@ int _custom_write_custom_history(info_t *custom_info)
  *
  * Return: histcount on success, 0 otherwise
  */
-
 int _custom_read_custom_history(info_t *custom_info)
 {
-	int custom_i, custom_last = 0, custom_linecount = 0;
-	ssize_t custom_fd, custom_rdlen, custom_fsize = 0;
-	struct stat custom_st;
-	char *custom_buf = NULL, *custom_filename =
-		_custom_get_custom_history_file(custom_info);
+	char *custom_filename = _custom_get_custom_history_file(custom_info);
 
 	if (!custom_filename)
 	{
 		return (0);
 	}
+	int custom_fd = _custom_open(custom_filename, O_RDONLY);
 
-	custom_fd = _custom_open(custom_filename, O_RDONLY);
 	_custom_free(custom_filename);
 	if (custom_fd == -1)
 	{
 		return (0);
 	}
+	ssize_t custom_fsize;
+	struct stat custom_st;
 
 	if (!_custom_fstat(custom_fd, &custom_st))
-	{
 		custom_fsize = custom_st.st_size;
-	}
 	if (custom_fsize < 2)
 	{
+		_custom_close(custom_fd);
 		return (0);
 	}
-	custom_buf = _custom_malloc(sizeof(char) * (custom_fsize + 1));
+	char *custom_buf = _custom_malloc(sizeof(char) * (custom_fsize + 1));
+
 	if (!custom_buf)
 	{
+		_custom_close(custom_fd);
 		return (0);
 	}
-	custom_rdlen = _custom_read(custom_fd, custom_buf, custom_fsize);
-		custom_buf[custom_fsize] = 0;
-		if (custom_rdlen <= 0)
-		{
-			return (_custom_free(custom_buf), 0);
-		}
-		_custom_close(custom_fd);
-		for (custom_i = 0; custom_i < custom_fsize; custom_i++)
-		{
-			if (custom_buf[custom_i] == '\n')
-			{
-				custom_buf[custom_i] = 0;
-				_custom_build_custom_history_list
-					(custom_info, custom_buf + custom_last, custom_linecount++);
-				custom_last = custom_i + 1;
-			}
-		}
-		if (custom_last != custom_i)
-		{
-			_custom_build_custom_history_list
-				(custom_info, custom_buf + custom_last, custom_linecount++);
-		}
+	ssize_t custom_rdlen = _custom_read(custom_fd, custom_buf, custom_fsize);
+
+	custom_buf[custom_fsize] = 0;
+	_custom_close(custom_fd);
+	if (custom_rdlen <= 0)
+	{
 		_custom_free(custom_buf);
+<<<<<<< HEAD
 			custom_info->custom_histcount = custom_linecount;
 		while (custom_info->custom_histcount-- >= CUSTOM_HIST_MAX)
+=======
+		return (0);
+	}
+	return (_custom_process_custom_history
+			(custom_info, custom_buf, custom_fsize));
+}
+int _custom_process_custom_history
+(info_t *custom_info, char *custom_buf, ssize_t custom_fsize);
+{
+	int custom_i, custom_last = 0, custom_linecount = 0;
+
+	for (custom_i = 0; custom_i < custom_fsize; custom_i++)
+	{
+		if (custom_buf[custom_i] == '\n')
+>>>>>>> 293ed044fc1de4eeee1a9665854bb590dc3cfca0
 		{
-			_custom_delete_custom_node_at_index(&(custom_info->custom_history), 0);
+		custom_buf[custom_i] = 0; _custom_build_custom_history_list
+				(custom_info, custom_buf + custom_last, custom_linecount++);
+			custom_last = custom_i + 1;
 		}
-		_custom_renumber_custom_history(custom_info);
+	}
+	if (custom_last != custom_i)
+	{
+		_custom_build_custom_history_list
+			(custom_info, custom_buf + custom_last, custom_linecount++);
+	}
+	_custom_free(custom_buf);
+	custom_info->custom_histcount = custom_linecount;
+	while (custom_info->custom_histcount-- >= CUSTOM_HIST_MAX)
+	{
+		_custom_delete_custom_node_at_index(&(custom_info->custom_history), 0);
+	}
+	_custom_renumber_custom_history(custom_info);
 		return (custom_info->custom_histcount);
 }
-
 /**
  * custom_history - adds entry to a history linked list
  * @custom_info: Structure containing potential arguments. Used to maintain
@@ -160,26 +171,4 @@ int custom_history(info_t *custom_info, char *custom_buf, int custom_linecount)
 		custom_info->custom_history = custom_node;
 	}
 	return (0);
-}
-
-
-/**
- * _custom_renumber_custom_history - renumbers the history
- * linked list after changes
- * @custom_info: Structure containing potential arguments. Used to maintain
- *
- * Return: the new histcount
- */
-
-int _custom_renumber_custom_history(info_t *custom_info)
-{
-	list_t *custom_node = custom_info->custom_history;
-	int custom_i = 0;
-
-	while (custom_node)
-	{
-		custom_node->num = custom_i++;
-		custom_node = custom_node->next;
-	}
-	return (custom_info->custom_histcount = custom_i);
 }
