@@ -128,7 +128,7 @@ int _custom_read_custom_history(info_t *custom_info)
 				(custom_info, custom_buf + custom_last, custom_linecount++);
 		}
 		_custom_free(custom_buf);
-		custom_info->custom_histcount = custom_linecount;
+			custom_info->custom_histcount = custom_linecount;
 		while (custom_info->custom_histcount-- >= CUSTOM_HIST_MAX)
 		{
 			_custom_delete_custom_node_at_index(&(custom_info->custom_history), 0);

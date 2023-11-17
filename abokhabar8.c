@@ -126,67 +126,86 @@ ssize_t custom_buffer(info_t *custom_info, char *custom_buf, size_t *custom_i)
  * Return: s
  */
 
-int custom_line(info_t *custom_info, char **custom_ptr, size_t *custom_length)
+ssize_t _r_buffer(info_t *custom_info, char *custom_buf, size_t *custom_len)
+{
+	char **custom_ptr;
+	size_t *custom_length;
+	char *custom_buf;
+	size_t custom_len;
+	ssize_t custom_r;
+
+	if (*custom_len == 0)
+	{
+		*custom_len = 0;
+		custom_r = _custom_read_buffer(custom_info, custom_buf, custom_len);
+
+		if (custom_r == -1 || (custom_r == 0 && *custom_len == 0))
+		{
+			return (-1);
+		}
+	}
+	return (custom_r);
+
+	size_t custom_i;
+	char *custom_c = _custom_find_char(custom_buf + custom_i, '\n');
+	size_t custom_k = custom_c ? 1 +
+		(unsigned int)(custom_c - custom_buf) : custom_len;
+	size_t new_length = *custom_length + custom_k - custom_i;
+	char *custom_p = *custom_ptr;
+	char *custom_new_p = _custom_realloc
+		(custom_p, *custom_length, new_length + 1);
+
+	if (!custom_new_p)
+	{
+		return (custom_p ? (free(custom_p), -1) : -1);
+	}
+
+	_custom_concatenate_string
+		(custom_new_p, custom_buf + custom_i, custom_k - custom_i);
+	*custom_length = new_length;
+	*custom_ptr = custom_new_p;
+
+	return (custom_c || custom_len == 0 ? 0 : 1);
+}
+
+ssize_t custom_line(info_t *custom_info, char **custom_ptr, size_t *c_length)
 {
 	static char custom_buf[READ_CUSTOM_BUF_SIZE];
 	static size_t custom_i, custom_len;
 	ssize_t custom_r;
+
+	int sig_num __attribute__((unused))
 	char *custom_p = *custom_ptr;
 
 	if (custom_p && custom_length)
 	{
 		*custom_length = 0;
 	}
+
 	while (1)
 	{
-		if (custom_i == custom_len)
+		custom_r = _custom_read_into_buffer(custom_info, custom_buf, &custom_len);
+		if (custom_r == -1)
 		{
-			custom_i = custom_len = 0;
-			custom_r = _custom_read_buffer(custom_info, custom_buf, &custom_len);
-			if (custom_r == -1 || (custom_r == 0 && custom_len == 0))
-			{
-				return (-1);
-			}
+			return (-1);
 		}
-		char *custom_c = _custom_find_char(custom_buf + custom_i, '\n');
-		size_t custom_k = custom_c ? 1 + (unsigned int)
-			(custom_c - custom_buf) : custom_len;
-		size_t new_length = *custom_length + custom_k - custom_i;
-		char *custom_new_p = _custom_realloc
-			(custom_p, *custom_length, new_length + 1);
 
-		if (!custom_new_p)
+		int result = _custom_process_buffer
+			(&custom_p, custom_length, custom_buf, custom_i, custom_len);
+
+		if (result == -1)
 		{
-			return (custom_p ? (free(custom_p), -1) : -1);
+			return (-1);
 		}
-		_custom_concatenate_string
-			(custom_new_p, custom_buf + custom_i, custom_k - custom_i);
 
-		*custom_length = new_length;
-		custom_i = custom_k;
-		custom_p = custom_new_p;
-
-		if (custom_c || custom_r == 0)
+		if (result == 0)
 		{
 			break;
 		}
 	}
-
 	*custom_ptr = custom_p;
 	return (*custom_length);
-}
 
-
-
-/**
- * _custom_sigint_handler - blocks ctrl-C
- * @custom_sig_num: the signal number
- *
- * Return: void
- */
-
-void _custom_sigint_handler(__attribute__((unused))int custom_sig_num)
-{
 	_custom_puts("\n");
 	_custom_puts("$ ");
 	_custom_put_char(BUF_FLUSH);
