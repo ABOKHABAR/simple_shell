@@ -1,13 +1,13 @@
 #include "shell.h"
 
 /**
- * mac21 - copies a string
+ * _fghyy - copies a string
  * @dest: the destination
  * @src: the source
  *
  * Return: pointer to destination
  */
-char mac21(char *dest, char *src)
+char *_fghyy(char *dest, char *src)
 {
 	int i = 0;
 
@@ -23,12 +23,12 @@ char mac21(char *dest, char *src)
 }
 
 /**
- * free4545 - duplicates a string
+ * tuio - duplicates a string
  * @str: the string to duplicate
  *
  * Return: pointer to the duplicated string
  */
-char free4545(const char *str)
+char *tuio(const char *str)
 {
 	int length = 0;
 	char *ret;
@@ -46,12 +46,12 @@ char free4545(const char *str)
 }
 
 /**
- *kissme - prints an input string
+ *oiu - prints an input string
  *@str: the string to be printed
  *
  * Return: Nothing
  */
-void kissme(char *str)
+void oiu(char *str)
 {
 	int i = 0;
 
@@ -65,13 +65,13 @@ void kissme(char *str)
 }
 
 /**
- * killlf - writes the character c to stdout
+ * uio - writes the character c to stdout
  * @c: The character to print
  *
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
-int killlf(char c)
+int uio(char c)
 {
 	static int i;
 	static char buf[WRITE_BUF_SIZE];

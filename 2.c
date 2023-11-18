@@ -1,13 +1,13 @@
 #include "shell.h"
 
 /**
- * **hcbjf - splits a string into words. Repeat delimiters are ignored
+ * **ezwin - splits a string into words. Repeat delimiters are ignored
  * @str: the input string
  * @d: the delimeter string
  * Return: a pointer to an array of strings, or NULL on failure
  */
 
-char **hcbjf(char *str, char *d)
+char **ezwin(char *str, char *d)
 {
 	int i, j, k, m, numwords = 0;
 	char **s;
@@ -49,12 +49,12 @@ char **hcbjf(char *str, char *d)
 }
 
 /**
- * **lkaaw - splits a string into words
+ * **ihateu - splits a string into words
  * @str: the input string
  * @d: the delimeter
  * Return: a pointer to an array of strings, or NULL on failure
  */
-char **lkaaw(char *str, char d)
+char **ihateu(char *str, char d)
 {
 	int i, j, k, m, numwords = 0;
 	char **s;

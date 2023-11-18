@@ -1,14 +1,14 @@
 #include "shell.h"
 
 /**
- * worstwork - test if current char in buffer is a chain delimeter
+ * mymani - test if current char in buffer is a chain delimeter
  * @info: the parameter struct
  * @buf: the char buffer
  * @p: address of current position in buf
  *
  * Return: 1 if chain delimeter, 0 otherwise
  */
-int worstwork(info_t *info, char *buf, size_t *p)
+int mymani(info_t *info, char *buf, size_t *p)
 {
 	size_t j = *p;
 
@@ -36,7 +36,7 @@ int worstwork(info_t *info, char *buf, size_t *p)
 }
 
 /**
- * amachine - checks we should continue chaining based on last status
+ * mymanp - checks we should continue chaining based on last status
  * @info: the parameter struct
  * @buf: the char buffer
  * @p: address of current position in buf
@@ -45,7 +45,7 @@ int worstwork(info_t *info, char *buf, size_t *p)
  *
  * Return: Void
  */
-void amachine(info_t *info, char *buf, size_t *p, size_t i, size_t len)
+void mymanp(info_t *info, char *buf, size_t *p, size_t i, size_t len)
 {
 	size_t j = *p;
 
@@ -70,12 +70,12 @@ void amachine(info_t *info, char *buf, size_t *p, size_t i, size_t len)
 }
 
 /**
- * peace - replaces an aliases in the tokenized string
+ * mymanl - replaces an aliases in the tokenized string
  * @info: the parameter struct
  *
  * Return: 1 if replaced, 0 otherwise
  */
-int peace(info_t *info)
+int mymanl(info_t *info)
 {
 	int i;
 	list_t *node;
@@ -99,12 +99,12 @@ int peace(info_t *info)
 }
 
 /**
- * mossab - replaces vars in the tokenized string
+ * mymank - replaces vars in the tokenized string
  * @info: the parameter struct
  *
  * Return: 1 if replaced, 0 otherwise
  */
-int mossab(info_t *info)
+int mymank(info_t *info)
 {
 	int i = 0;
 	list_t *node;
@@ -140,13 +140,13 @@ int mossab(info_t *info)
 }
 
 /**
- * ggnt - replaces string
+ * mymanj - replaces string
  * @old: address of old string
  * @new: new string
  *
  * Return: 1 if replaced, 0 otherwise
  */
-int ggnt(char **old, char *new)
+int mymanj(char **old, char *new)
 {
 	free(*old);
 	*old = new;
