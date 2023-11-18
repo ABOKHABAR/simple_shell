@@ -1,104 +1,85 @@
 #include "myshell.h"
 
-
 /**
- *_custom_print_error - prints an input string
- * @custom_str: the string to be printed
+ *_custom_eputs - prints an input string
+ * @str: the string to be printed
  *
  * Return: Nothing
  */
-
-void _custom_print_error(char *custom_str)
+void _custom_eputs(char *str)
 {
-	int custom_i = 0;
+	int i = 0;
 
-	if (!custom_str)
+	if (!str)
 		return;
-	while (custom_str[custom_i] != '\0')
-
+	while (str[i] != '\0')
 	{
-		_custom_print_error(*custom_str[custom_i]);
-		custom_i++;
+		_eputchar(str[i]);
+		i++;
 	}
 }
 
-
 /**
- * _custom_put_error_char - writes the character c to stderr
- * @custom_c: The character to print
+ * _custom_eputchar - writes the character c to stderr
+ * @c: The character to print
  *
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
-
-int _custom_put_error_char(char custom_c)
+int _custom_eputchar(char c)
 {
-	static int custom_i;
-	static char custom_buf[CUSTOM_WRITE_BUF_SIZE];
+	static int i;
+	static char buf[WRITE_BUF_SIZE];
 
-	if (custom_c == CUSTOM_BUF_FLUSH || custom_i >= CUSTOM_WRITE_BUF_SIZE)
-
+	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
 	{
-		write(2, custom_buf, custom_i);
-		custom_i = 0;
+		write(2, buf, i);
+		i = 0;
 	}
-
-	if (custom_c != CUSTOM_BUF_FLUSH)
-
-	{
-		custom_buf[custom_i++] = custom_c;
-	}
-
+	if (c != BUF_FLUSH)
+		buf[i++] = c;
 	return (1);
 }
 
-
 /**
- * _custom_put_char_fd - writes the character c to given fd
- * @custom_c: The character to print
- * @custom_fd: The filedescriptor to write to
+ * _putfd_custom - writes the character c to given fd
+ * @c: The character to print
+ * @fd: The filedescriptor to write to
  *
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
-
-int _custom_put_char_fd(char custom_c, int custom_fd)
+int _putfd_custom(char c, int fd)
 {
-	static int custom_i;
-	static char custom_buf[CUSTOM_WRITE_BUF_SIZE];
+	static int i;
+	static char buf[WRITE_BUF_SIZE];
 
-	if (custom_c == CUSTOM_BUF_FLUSH || custom_i >= CUSTOM_WRITE_BUF_SIZE)
+	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
 	{
-		write(custom_fd, custom_buf, custom_i);
-		custom_i = 0;
+		write(fd, buf, i);
+		i = 0;
 	}
-	if (custom_c != CUSTOM_BUF_FLUSH)
-	{
-		custom_buf[custom_i++] = custom_c;
-	}
+	if (c != BUF_FLUSH)
+		buf[i++] = c;
 	return (1);
 }
 
-
 /**
- *_custom_puts_fd - prints an input string
- * @custom_str: the string to be printed
- * @custom_fd: the filedescriptor to write to
+ *_custom_putsfd - prints an input string
+ * @str: the string to be printed
+ * @fd: the filedescriptor to write to
  *
  * Return: the number of chars put
  */
-
-int _custom_puts_fd(char *custom_str, int custom_fd)
+int _custom_putsfd(char *str, int fd)
 {
-	int custom_i = 0;
+	int i = 0;
 
-	if (!custom_str)
-	{
+	if (!str)
 		return (0);
-	}
-	while (*custom_str)
+	while (*str)
 	{
-		custom_i += _custom_put_char_fd(*custom_str++, custom_fd);
+		i += _putfd(*str++, fd);
 	}
-	return (custom_i);
+	return (i);
 }

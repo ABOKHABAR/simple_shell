@@ -1,138 +1,115 @@
 #include "myshell.h"
 
-
 /**
- * _my_custom_history - displays the history list, command by line, preceded
+ * _my_custom_history - displays history list, one command by line, preceded
  *              with line numbers, starting at 0.
- * @custom_info: Structure containing potential arguments. Used to maintain
+ * @info: Structure containing potential arguments. Used to maintain
  *        constant function prototype.
  *  Return: Always 0
  */
-
-int _my_custom_history(custom_info_t *custom_info)
+int _my_custom_history(info_t *info)
 {
-	custom_print_list(custom_info->history);
+	print_list(info->history);
 	return (0);
 }
 
 /**
- * custom_unset_custom_alias - sets alias to string
- * @custom_info: parameter struct
- * @custom_str: the string alias
+ * custom_unset_alias - sets alias to string
+ * @info: parameter struct
+ * @str: the string alias
  *
  * Return: Always 0 on success, 1 on error
  */
-
-int custom_unset_custom_alias(custom_info_t *custom_info, char *custom_str)
+int custom_unset_alias(info_t *info, char *str)
 {
-	char *custom_p, custom_c;
-	int custom_ret;
+	char *p, c;
+	int ret;
 
-	custom_p = _custom_strchr(custom_str, '=');
-
-	if (!custom_p)
-	{
+	p = _strchr(str, '=');
+	if (!p)
 		return (1);
-	}
-	custom_c = *custom_p;
-	*custom_p = 0;
-	custom_ret = custom_delete_node_at_index(&(custom_info->custom_alias),
-	custom_get_node_index(custom_info->custom_alias, custom_node_starts_with)
-		(custom_info->custom_alias, custom_str, -1));
-	*custom_p = custom_c;
-	return (custom_ret);
+	c = *p;
+	*p = 0;
+	ret = delete_node_at_index(&(info->alias),
+		get_node_index(info->alias, node_starts_with(info->alias, str, -1)));
+	*p = c;
+	return (ret);
 }
 
 /**
- * custom_set_custom_alias - sets alias to string
- * @custom_info: parameter struct
- * @custom_str: the string alias
+ * custom_set_alias - sets alias to string
+ * @info: parameter struct
+ * @str: the string alias
  *
  * Return: Always 0 on success, 1 on error
  */
-
-int custom_set_custom_alias(custom_info_t *custom_info, char *custom_str)
+int custom_set_alias(info_t *info, char *str)
 {
-	char *custom_p;
+	char *p;
 
-	custom_p = _custom_strchr(custom_str, '=');
-	if (!custom_p)
-	{
+	p = _strchr(str, '=');
+	if (!p)
 		return (1);
-	}
+	if (!*++p)
+		return (custom_unset_alias(info, str));
 
-	if (!*++custom_p)
-	{
-		return (custom_unset_custom_alias(custom_info, custom_str));
-	}
-	custom_unset_custom_alias(custom_info, custom_str);
-	return (custom_add_node_end
-			(&(custom_info->custom_alias), custom_str, 0) == NULL);
+	custom_unset_alias(info, str);
+	return (add_node_end(&(info->alias), str, 0) == NULL);
 }
 
-
 /**
- * custom_print_custom_alias - prints an alias string
- * @custom_node: the alias node
+ * print_custom_alias - prints an alias string
+ * @node: the alias node
  *
  * Return: Always 0 on success, 1 on error
  */
-
-int custom_print_custom_alias(custom_list_t *custom_node)
+int print_custom_alias(list_t *node)
 {
-	char *custom_p = NULL, *custom_a = NULL;
+	char *p = NULL, *a = NULL;
 
-	if (custom_node)
+	if (node)
 	{
-		custom_p = _custom_strchr(custom_node->str, '=');
-		for (custom_a = custom_node->str; custom_a <= custom_p; custom_putchar
-				(*custom_a))
-			custom_putchar('\'');
-		custom_puts(custom_p + 1);
-		custom_puts("'\n");
+		p = _strchr(node->str, '=');
+		for (a = node->str; a <= p; a++)
+			_putchar(*a);
+		_putchar('\'');
+		_puts(p + 1);
+		_puts("'\n");
 		return (0);
 	}
 	return (1);
 }
 
-
 /**
- * _my_custom_alias - mimics the alias builtin (man alias)
- * @custom_info: Structure containing potential arguments. Used to maintain
+ * _myalias_custom - mimics the alias builtin (man alias)
+ * @info: Structure containing potential arguments. Used to maintain
  *          constant function prototype.
  *  Return: Always 0
  */
-
-int _my_custom_alias(custom_info_t *custom_info)
+int _myalias_custom(info_t *info)
 {
-	int custom_i = 0;
-	char *custom_p = NULL;
-	custom_list_t *custom_node = NULL;
+	int i = 0;
+	char *p = NULL;
+	list_t *node = NULL;
 
-	if (custom_info->custom_argc == 1)
+	if (info->argc == 1)
 	{
-		custom_node = custom_info->custom_alias;
-		while (custom_node)
+		node = info->alias;
+		while (node)
 		{
-			custom_print_custom_alias(custom_node);
-			custom_node = custom_node->next;
+			print_alias(node);
+			node = node->next;
 		}
 		return (0);
 	}
-
-	for (custom_i = 1; custom_info->custom_argv[custom_i]; custom_i++)
+	for (i = 1; info->argv[i]; i++)
 	{
-		custom_p = _custom_strchr(custom_info->custom_argv[custom_i], '=');
-		if (custom_p)
-		{
-			custom_set_custom_alias(custom_info, custom_info->custom_argv[custom_i]);
-		}
-
+		p = _strchr(info->argv[i], '=');
+		if (p)
+			set_alias(info, info->argv[i]);
 		else
-		{
-			custom_print_custom_alias(custom_node_starts_with
-					(custom_info->custom_alias, custom_info->custom_argv[custom_i], '='));
-		}
+			print_alias(node_starts_with(info->alias, info->argv[i], '='));
 	}
+
 	return (0);
 }

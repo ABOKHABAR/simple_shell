@@ -1,91 +1,74 @@
-#include "myshell.h"
+#include "shell.h"
 
 /**
- **_custom_copy_str - copies a string
- *@custom_dest: the destination string to be copied to
- *@custom_src: the source string
- *@custom_n: the amount of characters to be copied
+ **_custom_strncpy - copies a string
+ *@dest: the destination string to be copied to
+ *@src: the source string
+ *@n: the amount of characters to be copied
  *Return: the concatenated string
  */
-
-char *_custom_copy_str(char *custom_dest, char *custom_src, int custom_n)
+char *_custom_strncpy(char *dest, char *src, int n)
 {
-	int custom_i, custom_j;
-	char *custom_s = custom_dest;
+	int i, j;
+	char *s = dest;
 
-	custom_i = 0;
-	while (custom_src[custom_i] != '\0' && custom_i < custom_n - 1)
+	i = 0;
+	while (src[i] != '\0' && i < n - 1)
 	{
-		custom_dest[custom_i] = custom_src[custom_i];
-		custom_i++;
+		dest[i] = src[i];
+		i++;
 	}
-
-	if (custom_i < custom_n)
+	if (i < n)
 	{
-		custom_j = custom_i;
-		while (custom_j < custom_n)
+		j = i;
+		while (j < n)
 		{
-			custom_dest[custom_j] = '\0';
-			custom_j++;
+			dest[j] = '\0';
+			j++;
 		}
 	}
-	return (custom_s);
+	return (s);
 }
 
 /**
- ** custom_concatenate_str - concatenates two strings
- *@custom_dest: the first string
- *@custom_src: the second string
- *@custom_n: the amount of bytes to be maximally used
+ **_strncat_custom - concatenates two strings
+ *@dest: the first string
+ *@src: the second string
+ *@n: the amount of bytes to be maximally used
  *Return: the concatenated string
  */
-
-char *custom_concatenate_str(char *custom_dest, char *custom_src, int custom_n)
+char *_strncat_custom(char *dest, char *src, int n)
 {
-	int custom_i, custom_j;
-	char *custom_s = custom_dest;
+	int i, j;
+	char *s = dest;
 
-	custom_i = 0;
-	custom_j = 0;
-	while (custom_dest[custom_i] != '\0')
+	i = 0;
+	j = 0;
+	while (dest[i] != '\0')
+		i++;
+	while (src[j] != '\0' && j < n)
 	{
-		custom_i++;
+		dest[i] = src[j];
+		i++;
+		j++;
 	}
-
-	while (custom_src[custom_j] != '\0' && custom_j < custom_n)
-	{
-		custom_dest[custom_i] = custom_src[custom_j];
-		custom_i++;
-		custom_j++;
-	}
-
-	if (custom_j < custom_n)
-	{
-		custom_dest[custom_i] = '\0';
-	}
-	return (custom_s);
+	if (j < n)
+		dest[i] = '\0';
+	return (s);
 }
 
-
 /**
- **_custom_find_char - locates a character in a string
- *@custom_str: the string to be parsed
- *@custom_c: the character to look for
+ **_my_strchr - locates a character in a string
+ *@s: the string to be parsed
+ *@c: the character to look for
  *Return: (s) a pointer to the memory area s
  */
-
-char *_custom_find_char(char *custom_str, char custom_c)
+char *_my_strchr(char *s, char c)
 {
-	do
+	do {
+		if (*s == c)
+			return (s);
+	} while (*s++ != '\0');
 
-	{
-		if (*custom_str == custom_c)
-		{
-			return (custom_str);
-		}
-
-	}
-
-	while (*custom_str++ != '\0');
 	return (NULL);
 }

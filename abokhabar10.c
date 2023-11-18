@@ -1,87 +1,74 @@
 #include "myshell.h"
 
 /**
- * _custom_clear_custom_info - initializes info_t struct
- * @custom_info: struct address
+ * clear_custom_info - initializes info_t struct
+ * @info: struct address
  */
-
-void _custom_clear_custom_info(info_t *custom_info)
+void clear_custom_info(info_t *info)
 {
-	custom_info->custom_arg = NULL;
-	custom_info->custom_argv = NULL;
-	custom_info->custom_path = NULL;
-	custom_info->custom_argc = 0;
+	info->arg = NULL;
+	info->argv = NULL;
+	info->path = NULL;
+	info->argc = 0;
 }
 
 /**
- * _custom_set_custom_info - initializes info_t struct
- * @custom_info: struct address
- * @custom_av: argument vector
+ * custom_set_info - initializes info_t struct
+ * @info: struct address
+ * @av: argument vector
  */
-
-void _custom_set_custom_info(info_t *custom_info, char **custom_av)
+void custom_set_info(info_t *info, char **av)
 {
-	int custom_i = 0;
+	int i = 0;
 
-	custom_info->custom_fname = custom_av[0];
-	if (custom_info->custom_arg)
+	info->fname = av[0];
+	if (info->arg)
 	{
-		custom_info->custom_argv = _custom_strtow(custom_info->custom_arg, " \t");
-		if (!custom_info->custom_argv)
+		info->argv = strtow(info->arg, " \t");
+		if (!info->argv)
 		{
-			custom_info->custom_argv = _custom_malloc(sizeof(char *) * 2);
-			if (custom_info->custom_argv)
+
+			info->argv = malloc(sizeof(char *) * 2);
+			if (info->argv)
 			{
-				custom_info->custom_argv[0] = _custom_strdup(custom_info->custom_arg);
-				custom_info->custom_argv[1] = NULL;
+				info->argv[0] = _strdup(info->arg);
+				info->argv[1] = NULL;
 			}
 		}
-		for (custom_i = 0; custom_info->custom_argv
-				&& custom_info->custom_argv[custom_i]; custom_i++)
+		for (i = 0; info->argv && info->argv[i]; i++)
 			;
-		custom_info->custom_argc = custom_i;
+		info->argc = i;
 
-		_custom_replace_custom_alias(custom_info);
-		_custom_replace_custom_vars(custom_info);
+		replace_alias(info);
+		replace_vars(info);
 	}
 }
 
 /**
- * _custom_free_custom_info - frees info_t struct fields
- * @custom_info: struct address
+ * free_custom_info - frees info_t struct fields
+ * @info: struct address
  * @all: true if freeing all fields
  */
-
-void _custom_free_custom_info(info_t *custom_info, int all)
+void free_custom_info(info_t *info, int all)
 {
-	_custom_ffree(custom_info->custom_argv);
-	custom_info->custom_argv = NULL;
-	custom_info->custom_path = NULL;
+	ffree(info->argv);
+	info->argv = NULL;
+	info->path = NULL;
 	if (all)
 	{
-		if (!custom_info->custom_cmd_buf)
-		{
-			_custom_free(custom_info->custom_arg);
-		}
-		if (custom_info->custom_env)
-		{
-			_custom_free_list(&(custom_info->custom_env));
-		}
-		if (custom_info->custom_history)
-		{
-			_custom_free_list(&(custom_info->custom_history));
-		}
-		if (custom_info->custom_alias)
-		{
-			_custom_free_list(&(custom_info->custom_alias));
-		}
-		_custom_ffree(custom_info->custom_environ);
-		custom_info->custom_environ = NULL;
-		_custom_bfree((void **)custom_info->custom_cmd_buf);
-		if (custom_info->custom_readfd > 2)
-		{
-			close(custom_info->custom_readfd);
-		}
-		_custom_putchar(CUSTOM_BUF_FLUSH);
+		if (!info->cmd_buf)
+			free(info->arg);
+		if (info->env)
+			free_list(&(info->env));
+		if (info->history)
+			free_list(&(info->history));
+		if (info->alias)
+			free_list(&(info->alias));
+		ffree(info->environ);
+			info->environ = NULL;
+		bfree((void **)info->cmd_buf);
+		if (info->readfd > 2)
+			close(info->readfd);
+		_putchar(BUF_FLUSH);
 	}
 }

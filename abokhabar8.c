@@ -1,262 +1,170 @@
-#include "myshell.h"
+#include "shell.h"
 
 /**
- * custom_buff - buffers chained commands
- * @custom_info: parameter struct
- * @custom_buf: address of buffer
- * @custom_len: address of len var
+ * my_input_buf - buffers chained commands
+ * @info: parameter struct
+ * @buf: address of buffer
+ * @len: address of len var
  *
  * Return: bytes read
  */
-ssize_t custom_buff(info_t *custom_info, char **custom_buf, size_t *custom_len)
+ssize_t my_input_buf(info_t *info, char **buf, size_t *len)
 {
-    ssize_t custom_r = 0;
-    size_t custom_len_p = 0;
+	ssize_t r = 0;
+	size_t len_p = 0;
 
-    if (!*custom_len)
-    {
-        free(*custom_buf);
-        *custom_buf = NULL;
-        signal(SIGINT, _custom_sigint_handler);
-#if USE_CUSTOM_GETLINE
-        custom_r = _custom_getline(custom_buf, &custom_len_p, stdin);
+	if (!*len) /* if nothing left in the buffer, fill it */
+	{
+		/*bfree((void **)info->cmd_buf);*/
+		free(*buf);
+		*buf = NULL;
+		signal(SIGINT, sigintHandler);
+#if USE_GETLINE
+		r = getline(buf, &len_p, stdin);
 #else
-        custom_r = _custom_get_line(custom_info, custom_buf, &custom_len_p);
+		r = _getline(info, buf, &len_p);
 #endif
-        if (custom_r > 0)
-        {
-            if ((*custom_buf)[custom_r - 1] == '\n')
-            {
-                (*custom_buf)[custom_r - 1] = '\0';
-                custom_r--;
-            }
-            custom_info->linecount_flag = 1;
-            _custom_remove_comments(*custom_buf);
-            _custom_build_history_list(custom_info, *custom_buf, custom_info->histcount++);
-            custom_len = custom_r;
-            custom_info->cmd_buf = custom_buf;
-        }
-    }
-    return custom_r;
+		if (r > 0)
+		{
+			if ((*buf)[r - 1] == '\n')
+			{
+				(*buf)[r - 1] = '\0'; /* remove trailing newline */
+				r--;
+			}
+			info->linecount_flag = 1;
+			remove_comments(*buf);
+			build_history_list(info, *buf, info->histcount++);
+			/* if (_strchr(*buf, ';')) is this a command chain? */
+			{
+				*len = r;
+				info->cmd_buf = buf;
+			}
+		}
+	}
+	return (r);
 }
 
 /**
- * _custom_get_input - gets a line minus the newline
- * @custom_info: parameter struct
+ * get_custom_input - gets a line minus the newline
+ * @info: parameter struct
  *
  * Return: bytes read
  */
-ssize_t _custom_get_input(info_t *custom_info)
+ssize_t get_custom_input(info_t *info)
 {
-    static char *custom_buf;
-    static size_t custom_i, custom_j, custom_len;
-    ssize_t custom_r = 0;
-    char **custom_buf_p = &(custom_info->arg), *custom_p;
+	static char *buf; /* the ';' command chain buffer */
+	static size_t i, j, len;
+	ssize_t r = 0;
+	char **buf_p = &(info->arg), *p;
 
-    _custom_put_char(BUF_FLUSH);
-    custom_r = _custom_input_buffer(custom_info, &custom_buf, &custom_len);
-    if (custom_r == -1)
-    {
-        return -1;
-    }
-    if (custom_len)
-    {
-        custom_j = custom_i;
-        custom_p = custom_buf + custom_i;
+	_putchar(BUF_FLUSH);
+	r = input_buf(info, &buf, &len);
+	if (r == -1) /* EOF */
+		return (-1);
+	if (len)	/* we have commands left in the chain buffer */
+	{
+		j = i; /* init new iterator to current buf position */
+		p = buf + i; /* get pointer for return */
 
-        _custom_check_chain(custom_info, custom_buf, &custom_j, custom_i, custom_len);
-        while (custom_j < custom_len)
-        {
-            if (_custom_is_chain(custom_info, custom_buf, &custom_j))
-            {
-                break;
-            }
-            custom_j++;
-        }
-        custom_i = custom_j + 1;
-        if (custom_i >= custom_len)
-        {
-            custom_i = custom_len = 0;
-            custom_info->cmd_buf_type = CMD_NORM;
-        }
-        *custom_buf_p = custom_p;
-        return _custom_string_length(custom_p);
-    }
-    *custom_buf_p = custom_buf;
-    return custom_r;
+		check_chain(info, buf, &j, i, len);
+		while (j < len) /* iterate to semicolon or end */
+		{
+			if (is_chain(info, buf, &j))
+				break;
+			j++;
+		}
+
+		i = j + 1; /* increment past nulled ';'' */
+		if (i >= len) /* reached end of buffer? */
+		{
+			i = len = 0; /* reset position and length */
+			info->cmd_buf_type = CMD_NORM;
+		}
+
+		*buf_p = p; /* pass back pointer to current command position */
+		return (_strlen(p)); /* return length of current command */
+	}
+
+	*buf_p = buf; /* else not a chain, pass back buffer from _getline() */
+	return (r); /* return length of buffer from _getline() */
 }
 
 /**
- * custom_buffer - reads a buffer
- * @custom_info: parameter struct
- * @custom_buf: buffer
- * @custom_i: size
+ * custom_read_buf - reads a buffer
+ * @info: parameter struct
+ * @buf: buffer
+ * @i: size
  *
  * Return: r
  */
-ssize_t custom_buffer(info_t *custom_info, char *custom_buf, size_t *custom_i)
+ssize_t custom_read_buf(info_t *info, char *buf, size_t *i)
 {
-    ssize_t custom_r = 0;
+	ssize_t r = 0;
 
-    if (*custom_i)
-    {
-        return 0;
-    }
-    custom_r = read(custom_info->readfd, custom_buf, READ_CUSTOM_BUF_SIZE);
-    if (custom_r >= 0)
-    {
-        *custom_i = custom_r;
-    }
-    return custom_r;
+	if (*i)
+		return (0);
+	r = read(info->readfd, buf, READ_BUF_SIZE);
+	if (r >= 0)
+		*i = r;
+	return (r);
 }
 
 /**
- * custom_line - gets the next line of input from STDIN
- * @custom_info: parameter struct
- * @custom_ptr: address of pointer to buffer, preallocated or NULL
- * @custom_length: size of preallocated ptr buffer if not NULL
+ * _custom_getline - gets the next line of input from STDIN
+ * @info: parameter struct
+ * @ptr: address of pointer to buffer, preallocated or NULL
+ * @length: size of preallocated ptr buffer if not NULL
  *
  * Return: s
  */
-<<<<<<< HEAD
-
-ssize_t _r_buffer(info_t *custom_info, char *custom_buf, size_t *custom_len)
+int _custom_getline(info_t *info, char **ptr, size_t *length)
 {
-	char **custom_ptr;
-	size_t *custom_length;
-	char *custom_buf;
-	size_t custom_len;
-	ssize_t custom_r;
+	static char buf[READ_BUF_SIZE];
+	static size_t i, len;
+	size_t k;
+	ssize_t r = 0, s = 0;
+	char *p = NULL, *new_p = NULL, *c;
 
-	if (*custom_len == 0)
-	{
-		*custom_len = 0;
-		custom_r = _custom_read_buffer(custom_info, custom_buf, custom_len);
+	p = *ptr;
+	if (p && length)
+		s = *length;
+	if (i == len)
+		i = len = 0;
 
-		if (custom_r == -1 || (custom_r == 0 && *custom_len == 0))
-		{
-			return (-1);
-		}
-	}
-	return (custom_r);
+	r = read_buf(info, buf, &len);
+	if (r == -1 || (r == 0 && len == 0))
+		return (-1);
 
-	size_t custom_i;
-	char *custom_c = _custom_find_char(custom_buf + custom_i, '\n');
-	size_t custom_k = custom_c ? 1 +
-		(unsigned int)(custom_c - custom_buf) : custom_len;
-	size_t new_length = *custom_length + custom_k - custom_i;
-	char *custom_p = *custom_ptr;
-	char *custom_new_p = _custom_realloc
-		(custom_p, *custom_length, new_length + 1);
+	c = _strchr(buf + i, '\n');
+	k = c ? 1 + (unsigned int)(c - buf) : len;
+	new_p = _realloc(p, s, s ? s + k : k + 1);
+	if (!new_p) /* MALLOC FAILURE! */
+		return (p ? free(p), -1 : -1);
 
-	if (!custom_new_p)
-	{
-		return (custom_p ? (free(custom_p), -1) : -1);
-	}
+	if (s)
+		_strncat(new_p, buf + i, k - i);
+	else
+		_strncpy(new_p, buf + i, k - i + 1);
 
-	_custom_concatenate_string
-		(custom_new_p, custom_buf + custom_i, custom_k - custom_i);
-	*custom_length = new_length;
-	*custom_ptr = custom_new_p;
+	s += k - i;
+	i = k;
+	p = new_p;
 
-	return (custom_c || custom_len == 0 ? 0 : 1);
-}
-
-ssize_t custom_line(info_t *custom_info, char **custom_ptr, size_t *c_length)
-{
-	static char custom_buf[READ_CUSTOM_BUF_SIZE];
-	static size_t custom_i, custom_len;
-	ssize_t custom_r;
-
-	int sig_num __attribute__((unused))
-	char *custom_p = *custom_ptr;
-
-	if (custom_p && custom_length)
-	{
-		*custom_length = 0;
-	}
-
-	while (1)
-	{
-		custom_r = _custom_read_into_buffer(custom_info, custom_buf, &custom_len);
-		if (custom_r == -1)
-		{
-			return (-1);
-		}
-
-		int result = _custom_process_buffer
-			(&custom_p, custom_length, custom_buf, custom_i, custom_len);
-
-		if (result == -1)
-		{
-			return (-1);
-		}
-
-		if (result == 0)
-		{
-			break;
-		}
-	}
-	*custom_ptr = custom_p;
-	return (*custom_length);
-
-	_custom_puts("\n");
-	_custom_puts("$ ");
-	_custom_put_char(BUF_FLUSH);
-=======
-int custom_line(info_t *custom_info, char **custom_ptr, size_t *custom_length)
-{
-    static char custom_buf[READ_CUSTOM_BUF_SIZE];
-    static size_t custom_i, custom_len;
-    ssize_t custom_r;
-    char *custom_p = *custom_ptr;
-
-    if (custom_p && custom_length)
-    {
-        *custom_length = 0;
-    }
-    while (1)
-    {
-        if (custom_i == custom_len)
-        {
-            custom_i = custom_len = 0;
-            custom_r = _custom_read_buffer(custom_info, custom_buf, &custom_len);
-            if (custom_r == -1 || (custom_r == 0 && custom_len == 0))
-            {
-                return -1;
-            }
-        }
-        char *custom_c = _custom_find_char(custom_buf + custom_i, '\n');
-        size_t custom_k = custom_c ? 1 + (unsigned int)(custom_c - custom_buf) : custom_len;
-        size_t new_length = *custom_length + custom_k - custom_i;
-        char *custom_new_p = _custom_realloc(custom_p, *custom_length, new_length + 1);
-        if (!custom_new_p)
-        {
-            return custom_p ? (free(custom_p), -1) : -1;
-        }
-        _custom_concatenate_string(custom_new_p, custom_buf + custom_i, custom_k - custom_i);
-        *custom_length = new_length;
-        custom_i = custom_k;
-        custom_p = custom_new_p;
-        if (custom_c || custom_r == 0)
-        {
-            break;
-        }
-    }
-    *custom_ptr = custom_p;
-    return *custom_length;
+	if (length)
+		*length = s;
+	*ptr = p;
+	return (s);
 }
 
 /**
- * _custom_sigint_handler - blocks ctrl-C
- * @custom_sig_num: the signal number
+ * _custom_sigintHandler - blocks ctrl-C
+ * @sig_num: the signal number
  *
  * Return: void
  */
-void _custom_sigint_handler(__attribute__((unused))int custom_sig_num)
+void _custom_sigintHandler(__attribute__((unused))int sig_num)
 {
-    _custom_puts("\n");
-    _custom_puts("$ ");
-    _custom_put_char(BUF_FLUSH);
->>>>>>> 293ed044fc1de4eeee1a9665854bb590dc3cfca0
+	_puts("\n");
+	_puts("$ ");
+	_putchar(BUF_FLUSH);
 }

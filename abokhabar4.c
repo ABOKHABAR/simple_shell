@@ -2,112 +2,91 @@
 
 /**
  * _my_custom_env - prints the current environment
- * @custom_info: Structure containing potential arguments. Used to maintain
+ * @info: Structure containing potential arguments. Used to maintain
  *          constant function prototype.
  * Return: Always 0
  */
-
-int _my_custom_env(custom_info_t *custom_info)
+int _my_custom_env(info_t *info)
 {
-	custom_print_list_str(custom_info->custom_env);
+	print_list_str(info->env);
 	return (0);
 }
 
-
 /**
- * custom_get_custom_env - gets the value of an environ variable
- * @custom_info: Structure containing potential arguments. Used to maintain
- * @custom_name: env var name
+ * _getenv_custom - gets the value of an environ variable
+ * @info: Structure containing potential arguments. Used to maintain
+ * @name: env var name
  *
  * Return: the value
  */
-
-char *custom_get_custom_env(custom_info_t *custom_info,  char *custom_name)
+char *_getenv_custom(info_t *info, const char *name)
 {
-	custom_list_t *custom_node = custom_info->custom_env;
-	char *custom_p;
+	list_t *node = info->env;
+	char *p;
 
-	while (custom_node)
+	while (node)
 	{
-		custom_p = custom_starts_with(custom_node->str, custom_name);
-		if (custom_p && *custom_p)
-		{
-			return (custom_p);
-		}
-		custom_node = custom_node->next;
+		p = starts_with(node->str, name);
+		if (p && *p)
+			return (p);
+		node = node->next;
 	}
-
 	return (NULL);
 }
 
-
 /**
- * _my_custom_setenv - Initialize a new environment variable,
+ * _custom_mysetenv - Initialize a new environment variable,
  *             or modify an existing one
- * @custom_info: Structure containing potential arguments. Used to maintain
+ * @info: Structure containing potential arguments. Used to maintain
  *        constant function prototype.
  *  Return: Always 0
  */
-
-int _my_custom_setenv(custom_info_t *custom_info)
+int _custom_mysetenv(info_t *info)
 {
-	if (custom_info->custom_argc != 3)
+	if (info->argc != 3)
 	{
-		custom_err_puts("Incorrect number of arguments\n");
+		_eputs("Incorrect number of arguements\n");
 		return (1);
 	}
-
-	if (_custom_set_custom_env
-			(custom_info, custom_info->custom_argv[1], custom_info->custom_argv[2]))
-	{
+	if (_setenv(info, info->argv[1], info->argv[2]))
 		return (0);
-	}
 	return (1);
 }
 
-
 /**
  * _my_custom_unsetenv - Remove an environment variable
- * @custom_info: Structure containing potential arguments. Used to maintain
+ * @info: Structure containing potential arguments. Used to maintain
  *        constant function prototype.
  *  Return: Always 0
  */
-
-int _my_custom_unsetenv(custom_info_t *custom_info)
+int _my_custom_unsetenv(info_t *info)
 {
-	int custom_i;
+	int i;
 
-	if (custom_info->custom_argc == 1)
+	if (info->argc == 1)
 	{
-		custom_err_puts("Too few arguments.\n");
+		_eputs("Too few arguements.\n");
 		return (1);
 	}
-
-	for (custom_i = 1; custom_info->custom_argc; custom_i++)
-	{
-		custom_unset_custom_env(custom_info, custom_info->custom_argv[custom_i]);
-	}
+	for (i = 1; i <= info->argc; i++)
+		_unsetenv(info, info->argv[i]);
 
 	return (0);
 }
 
-
 /**
- * custom_populate_custom_env_list - populates env linked list
- * @custom_info: Structure containing potential arguments. Used to maintain
+ * populate_env_custom_list - populates env linked list
+ * @info: Structure containing potential arguments. Used to maintain
  *          constant function prototype.
  * Return: Always 0
  */
-
-int custom_populate_custom_env_list(custom_info_t *custom_info)
+int populate_env_custom_list(info_t *info)
 {
-	custom_list_t *custom_node = NULL;
-	size_t custom_i;
+	list_t *node = NULL;
+	size_t i;
 
-	for (custom_i = 0; custom_environ[custom_i]; custom_i++)
-	{
-		custom_add_node_end(&custom_node, custom_environ[custom_i], 0);
-	}
-	custom_info->custom_env = custom_node;
+	for (i = 0; environ[i]; i++)
+		add_node_end(&node, environ[i], 0);
+	info->env = node;
 	return (0);
 }
