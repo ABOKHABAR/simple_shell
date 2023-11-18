@@ -1,79 +1,154 @@
-#include "myshell.h"
+#include "shell.h"
 
 /**
- * check_interactive_mode - returns true if the shell is in interactive mode
- * @info: struct address
+ * worstwork - test if current char in buffer is a chain delimeter
+ * @info: the parameter struct
+ * @buf: the char buffer
+ * @p: address of current position in buf
  *
- * Return: 1 if interactive mode, 0 otherwise
+ * Return: 1 if chain delimeter, 0 otherwise
  */
-
-
-int check_interactive_mode(info_t *info)
+int worstwork(info_t *info, char *buf, size_t *p)
 {
-	return (isatty(STDIN_FILENO) && info->readfd <= 2);
+	size_t j = *p;
+
+	if (buf[j] == '|' && buf[j + 1] == '|')
+	{
+		buf[j] = 0;
+		j++;
+		info->cmd_buf_type = CMD_OR;
+	}
+	else if (buf[j] == '&' && buf[j + 1] == '&')
+	{
+		buf[j] = 0;
+		j++;
+		info->cmd_buf_type = CMD_AND;
+	}
+	else if (buf[j] == ';') /* found end of this command */
+	{
+		buf[j] = 0; /* replace semicolon with null */
+		info->cmd_buf_type = CMD_CHAIN;
+	}
+	else
+		return (0);
+	*p = j;
+	return (1);
 }
 
 /**
- * is_separator - checks if character is a separator
- * @c: the char to check
- * @separator: the separator string
- * Return: 1 if true, 0 if false
+ * amachine - checks we should continue chaining based on last status
+ * @info: the parameter struct
+ * @buf: the char buffer
+ * @p: address of current position in buf
+ * @i: starting position in buf
+ * @len: length of buf
+ *
+ * Return: Void
  */
-int is_separator(char c, char *separator)
+void amachine(info_t *info, char *buf, size_t *p, size_t i, size_t len)
 {
-	while (*separator)
+	size_t j = *p;
+
+	if (info->cmd_buf_type == CMD_AND)
 	{
-		if (*separator == c)
+		if (info->status)
 		{
-			return (1);
+			buf[i] = 0;
+			j = len;
 		}
-		separator++;
+	}
+	if (info->cmd_buf_type == CMD_OR)
+	{
+		if (!info->status)
+		{
+			buf[i] = 0;
+			j = len;
+		}
+	}
+
+	*p = j;
+}
+
+/**
+ * peace - replaces an aliases in the tokenized string
+ * @info: the parameter struct
+ *
+ * Return: 1 if replaced, 0 otherwise
+ */
+int peace(info_t *info)
+{
+	int i;
+	list_t *node;
+	char *p;
+
+	for (i = 0; i < 10; i++)
+	{
+		node = node_starts_with(info->alias, info->argv[0], '=');
+		if (!node)
+			return (0);
+		free(info->argv[0]);
+		p = _strchr(node->str, '=');
+		if (!p)
+			return (0);
+		p = _strdup(p + 1);
+		if (!p)
+			return (0);
+		info->argv[0] = p;
+	}
+	return (1);
+}
+
+/**
+ * mossab - replaces vars in the tokenized string
+ * @info: the parameter struct
+ *
+ * Return: 1 if replaced, 0 otherwise
+ */
+int mossab(info_t *info)
+{
+	int i = 0;
+	list_t *node;
+
+	for (i = 0; info->argv[i]; i++)
+	{
+		if (info->argv[i][0] != '$' || !info->argv[i][1])
+			continue;
+
+		if (!_strcmp(info->argv[i], "$?"))
+		{
+			replace_string(&(info->argv[i]),
+				_strdup(convert_number(info->status, 10, 0)));
+			continue;
+		}
+		if (!_strcmp(info->argv[i], "$$"))
+		{
+			replace_string(&(info->argv[i]),
+				_strdup(convert_number(getpid(), 10, 0)));
+			continue;
+		}
+		node = node_starts_with(info->env, &info->argv[i][1], '=');
+		if (node)
+		{
+			replace_string(&(info->argv[i]),
+				_strdup(_strchr(node->str, '=') + 1));
+			continue;
+		}
+		replace_string(&info->argv[i], _strdup(""));
+
 	}
 	return (0);
 }
 
 /**
- * is_alphabetic - checks for alphabetic character
- * @c: The character to check
- * Return: 1 if c is alphabetic, 0 otherwise
+ * ggnt - replaces string
+ * @old: address of old string
+ * @new: new string
+ *
+ * Return: 1 if replaced, 0 otherwise
  */
-int is_alphabetic(int c)
+int ggnt(char **old, char *new)
 {
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-		return (1);
-	else
-		return (0);
-}
-
-/**
- * custom_abokhabar1 - converts a string to an integer
- * @s: the string to be converted
- * Return: 0 if no numbers in the string, the converted number otherwise
- */
-int custom_abokhabar1(char *s)
-{
-	int i, sign = 1, flag = 0, result;
-	unsigned int num = 0;
-
-	for (i = 0; s[i] != '\0' && flag != 2; i++)
-	{
-		if (s[i] == '-')
-			sign *= -1;
-
-		if (s[i] >= '0' && s[i] <= '9')
-		{
-			flag = 1;
-			num *= 10;
-			num += (s[i] - '0');
-		}
-		else if (flag == 1)
-			flag = 2;
-	}
-
-	if (sign == -1)
-		result = -num;
-	else
-		result = num;
-
-	return (result);
+	free(*old);
+	*old = new;
+	return (1);
 }

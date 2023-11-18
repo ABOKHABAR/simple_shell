@@ -1,14 +1,13 @@
-#include "myshell.h"
+#include "shell.h"
 
 /**
- ** fnx1 - fills memory with a constant byte
+ **gymandtrain - fills memory with a constant byte
  *@s: the pointer to the memory area
  *@b: the byte to fill *s with
  *@n: the amount of bytes to be filled
  *Return: (s) a pointer to the memory area s
  */
-
-char *fnx1(char *s, char b, unsigned int n)
+char *gymandtrain(char *s, char b, unsigned int n)
 {
 	unsigned int i;
 
@@ -18,11 +17,10 @@ char *fnx1(char *s, char b, unsigned int n)
 }
 
 /**
- * fnx2 - frees a string of strings
+ * froeee - frees a string of strings
  * @pp: string of strings
  */
-
-void fnx2(char **pp)
+void froeee(char **pp)
 {
 	char **a = pp;
 
@@ -34,32 +32,31 @@ void fnx2(char **pp)
 }
 
 /**
- * fnx3 - reallocates a block of memory
- * @p: pointer to previous malloc'ated block
+ * ghoost - reallocates a block of memory
+ * @ptr: pointer to previous malloc'ated block
  * @old_size: byte size of previous block
  * @new_size: byte size of new block
  *
  * Return: pointer to da ol'block nameen.
  */
-
-void *fnx3(void *p, unsigned int old_size, unsigned int new_size)
+void ghoost(void *ptr, unsigned int old_size, unsigned int new_size)
 {
-	char *np;
+	char *p;
 
-	if (!p)
+	if (!ptr)
 		return (malloc(new_size));
 	if (!new_size)
-		return (free(p), NULL);
+		return (free(ptr), NULL);
 	if (new_size == old_size)
-		return (p);
+		return (ptr);
 
-	np = malloc(new_size);
-	if (!np)
+	p = malloc(new_size);
+	if (!p)
 		return (NULL);
 
 	old_size = old_size < new_size ? old_size : new_size;
 	while (old_size--)
-		np[old_size] = ((char *)p)[old_size];
-	free(p);
-	return (np);
+		p[old_size] = ((char *)ptr)[old_size];
+	free(ptr);
+	return (p);
 }
