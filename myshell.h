@@ -162,9 +162,9 @@ void *_realloc(void *, unsigned int, unsigned int);
 int bfree(void **);
 
 /* toem_atoi.c */
-int interactive(info_t *);
-int is_delim(char, char *);
-int _isalpha(int);
+int _myerratoi(info_t *);
+int print_custom_error(char, char *);
+int custom_print_d(int);
 int _atoi(char *);
 
 /* toem_errors1.c */
@@ -175,23 +175,23 @@ char *convert_number(long int, int, int);
 void remove_comments(char *);
 
 /* toem_builtin.c */
-int _myexit(info_t *);
-int _mycd(info_t *);
-int _myhelp(info_t *);
+int _my_custom_exit(info_t *);
+int _my_custom_cd(info_t *);
+int _my_custom_help(info_t *);
 
 /* toem_builtin1.c */
-int _myhistory(info_t *);
-int _myalias(info_t *);
+int _my_custom_history(info_t *);
+int custom_unset_alias(info_t *);
 
 /*toem_getline.c */
-ssize_t get_input(info_t *);
-int _getline(info_t *, char **, size_t *);
-void sigintHandler(int);
+ssize_t my_input_buf(info_t *);
+int _custom_getline(info_t *, char **, size_t *);
+void _custom_sigintHandler(int);
 
 /* toem_getinfo.c */
-void clear_info(info_t *);
-void set_info(info_t *, char **);
-void free_info(info_t *, int);
+void clear_custom_info(info_t *);
+void custom_set_info(info_t *, char **);
+void free_custom_info (info_t *, int);
 
 /* toem_environ.c */
 char *_my_custom_env(info_t *, const char *);
