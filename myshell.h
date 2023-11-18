@@ -22,6 +22,7 @@
 #define CMD_OR		1
 #define CMD_AND		2
 #define CMD_CHAIN	3
+#define ALIASES_H
 
 /* for convert_number() */
 #define CONVERT_LOWERCASE	1
