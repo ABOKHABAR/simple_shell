@@ -140,7 +140,7 @@ int banque(list_t **head, unsigned int index)
  *
  * Return: void
  */
-void cash(list_t **head_ptr)
+void cassh(list_t **head_ptr)
 {
 	list_t *node, *next_node, *head;
 

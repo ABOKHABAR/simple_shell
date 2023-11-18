@@ -39,7 +39,7 @@ void qwe(char **pp)
  *
  * Return: pointer to da ol'block nameen.
  */
-void *bvt(void *ptr, unsigned int old_size, unsigned int new_size)
+void *_bvt(void *ptr, unsigned int old_size, unsigned int new_size)
 {
 	char *p;
 

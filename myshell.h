@@ -193,43 +193,43 @@ void set_info(info_t *, char **);
 void free_info(info_t *, int);
 
 /* toem_environ.c */
-char *_getenv(info_t *, const char *);
-int _myenv(info_t *);
-int _mysetenv(info_t *);
-int _myunsetenv(info_t *);
-int populate_env_list(info_t *);
+char *_my_custom_env(info_t *, const char *);
+int _getenv_custom(info_t *);
+int _custom_mysetenv(info_t *);
+int _my_custom_unsetenv(info_t *);
+int populate_env_custom_list(info_t *);
 
 /* toem_getenv.c */
-char **get_environ(info_t *);
-int _unsetenv(info_t *, char *);
-int _setenv(info_t *, char *, char *);
+char **get_custom_environ(info_t *);
+int _my_unsetenv(info_t *, char *);
+int _setenv_custom(info_t *, char *, char *);
 
 /* toem_history.c */
-char *get_history_file(info_t *info);
-int write_history(info_t *info);
-int read_history(info_t *info);
-int build_history_list(info_t *info, char *buf, int linecount);
-int renumber_history(info_t *info);
+char *get_history_custom_file(info_t *info);
+int my_write_history(info_t *info);
+int my_read_history(info_t *info);
+int my_build_history_list(info_t *info, char *buf, int linecount);
+int my_renumber_history(info_t *info);
 
 /* toem_lists.c */
-list_t *add_node(list_t **, const char *, int);
-list_t *add_node_end(list_t **, const char *, int);
-size_t print_list_str(const list_t *);
-int delete_node_at_index(list_t **, unsigned int);
-void free_list(list_t **);
+list_t *abokhabaar3(list_t **, const char *, int);
+list_t *ert(list_t **, const char *, int);
+size_t ihatethis(const list_t *);
+int banque(list_t **, unsigned int);
+void cassh(list_t **);
 
 /* toem_lists1.c */
-size_t list_len(const list_t *);
-char **list_to_strings(list_t *);
-size_t print_list(const list_t *);
-list_t *node_starts_with(list_t *, char *, char);
-ssize_t get_node_index(list_t *, list_t *);
+size_t listkhamat(const list_t *);
+char **listpeople(list_t *);
+size_t abokhabar(const list_t *);
+list_t *khabib(list_t *, char *, char);
+ssize_t headache(list_t *, list_t *);
 
 /* toem_vars.c */
-int is_chain(info_t *, char *, size_t *);
-void check_chain(info_t *, char *, size_t *, size_t, size_t);
-int replace_alias(info_t *);
-int replace_vars(info_t *);
-int replace_string(char **, char *);
+int mymani(info_t *, char *, size_t *);
+void mymanp(info_t *, char *, size_t *, size_t, size_t);
+int mymanl(info_t *);
+int mymank(info_t *);
+int mymanj(char **, char *);
 
 #endif
